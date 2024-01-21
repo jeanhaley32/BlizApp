@@ -90,20 +90,20 @@ ATM Negotiating with the Hearthstone API is an area of least knowledge. My prior
   - For the cards, I am going to try and modify a solution I created previously for my website (not currently online).
 
 ## Action Plan
+resources : [Getting Started](https://develop.battle.net/documentation/guides/getting-started), [API Guides](https://develop.battle.net/documentation/hearthstone/guides)
 
 | Task | Status |
 |------|--------|
-| > Research Hearthstone API Documentation| - [X] |
-| resources : [Getting Started](https://develop.battle.net/documentation/guides/getting-started), [API Guides](https://develop.battle.net/documentation/hearthstone/guides)
-| 1. Learn Endpoints and authentication requirements | - [X] |
-| 2. Determine how to securely store the API secret for communication | - [X] |
-| > Implement Web Server | - [O] |
-| 1. Use `Goji` to handle `HTTP` `Get` Requests| - [ ] |
-| > Implement API CliClient |- [O] |
-| 1. Dependant on the primary`research` task above. | - [ ]
-| > Create Server-Sider Renderer  | - [ ] |
-| 1. Design web template to use when rendering `Deck` | - [ ] |
-| 2. append `cards` in `deck` to template, and construct the rendered site | - [ ] |
+| > Research Hearthstone API Documentation| Done | 
+| 1. Learn Endpoints and authentication requirements | Done |
+| 2. Determine how to securely store the API secret for communication | Done |
+| > Implement Web Server |  Working |
+| 1. Use `Goji` to handle `HTTP` `Get` Requests| Pending  |
+| > Implement API CliClient | Done |
+| 1. Dependant on the primary`research` task above. | Pending |
+| > Create Server-Sider Renderer  | Pending |
+| 1. Design web template to use when rendering `Deck` | Pending |
+| 2. append `cards` in `deck` to template, and construct the rendered site | Pending |
 
 
 ---
