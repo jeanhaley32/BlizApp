@@ -20,7 +20,7 @@ const (
 	// The URL for the Blizzard API token.
 	tokenURL = "https://oauth.battle.net/token"
 	// Define Page Limit
-	pageLimit = 90
+	pageLimit = 2
 	// Define Locale
 	locale = "en_US"
 )
@@ -94,9 +94,10 @@ type CardsResponse struct {
 // Obtain 10 cards from the Hearthstone API.
 func (c *client) GetCard() []Card {
 	var CardPages []CardsResponse
-
-	// Iterate over the page limit and append the cards to the body.
-	// The page limit is set to 1 for now, but can be increased as needed.
+	// There is logic here to handle multiple pages of results. From what I can tell, the criteria set for this
+	// challenge will only return 1 pages of results.
+	// I want to write logic that will actually scale the number of pages returned based on information recieved from the API.
+	// But that is outside the scope of this challenge.
 	for i := 1; i <= pageLimit; i++ {
 		url := apiURL + "?locale=" + locale + "&access_token=" + c.apiKey + "&page=" + fmt.Sprintf("%v", i)
 		// append the search creteria to the url.

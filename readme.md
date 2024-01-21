@@ -79,7 +79,7 @@ type deck []card
 
 
  ### API Client
- > **Obective** - I'd like to generate a random deck of cards that meets the above criteria every time the webpage is loaded. 
+ > **Objective** - I'd like to generate a random deck of cards that meets the above criteria every time the webpage is loaded. 
  
  *This _may be _inefficient_ based on_ how long the API client takes to negotiate with _the Heartstone server and receive_ cards. It may be useful to generate a deck ahead of the client, pass in the pre-cached deck, and generate a new one. This would help to more quickly provide the user with a deck, this is stipulated on the premise that only one or two people will use this at a time. _An influx of users would_ likely cause this idea to fail. **Figuring out a more efficient method of providing clients with `decks` is **out of **the **scope**** of this** project.***
 
@@ -90,7 +90,7 @@ ATM Negotiating with the Hearthstone API is an area of least knowledge. My prior
   - For the cards, I am going to try and modify a solution I created previously for my website (not currently online).
 
 ## Action Plan
-resources : [Getting Started](https://develop.battle.net/documentation/guides/getting-started), [API Guides](https://develop.battle.net/documentation/hearthstone/guides)
+resources: [Getting Started](https://develop.battle.net/documentation/guides/getting-started)](https://develop.battle.net/documentation/guides/getting-started), [API Guides](https://develop.battle.net/documentation/hearthstone/guides)
 
 | Task | Status |
 |------|--------|
