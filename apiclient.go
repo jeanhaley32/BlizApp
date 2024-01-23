@@ -34,48 +34,19 @@ type client struct {
 
 type Card struct {
 	ID         int    `json:"id"`
-	ClassID    class  `json:"classId"`
-	CardTypeID int    `json:"cardTypeId"`
-	CardSetID  int    `json:"cardSetId"`
-	RarityID   rarity `json:"rarityId"`
+	ClassID    Class  `json:"classId"`
+	CardTypeID Type   `json:"cardTypeId"`
+	CardSetID  Set    `json:"cardSetId"`
+	RarityID   Rarity `json:"rarityId"`
 	ManaCost   int    `json:"manaCost"`
 	Name       string `json:"name"`
 	Text       string `json:"text"`
 	Image      string `json:"image"`
 }
 
-type rarity int
-type class int
-
-const (
-	legendary rarity = 5
-	druid     class  = 2
-	warlock   class  = 9
-)
-
-func (r rarity) String() string {
-	switch r {
-	case legendary:
-		return "legendary"
-	default:
-		return "unknown"
-	}
-}
-
 type secrets struct {
 	ClientID string `json:"clientid"`
 	Secret   string `json:"secret"`
-}
-
-func (c class) String() string {
-	switch c {
-	case druid:
-		return "druid"
-	case warlock:
-		return "warlock"
-	default:
-		return "unknown"
-	}
 }
 
 type CardsResponse struct {

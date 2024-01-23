@@ -119,10 +119,11 @@ the client struct's `GetCard()` method is used to construct the appropriate URLs
 - We construct the `outbound URL` and append all of the necessary search parameters from the `criteria` object, this function supports multiple values for a single search parameter by using reflection to see when an entry is a slice and appends both values to the URL as comma-separated entries. 
  
  ### Server-Side Renderer
- This is the portion of the assignment I was least familiar with and learned a lot from. If I were to put more work into this, I'd make the containers for the cards more uniform and cleaner. It could use some work, but for the sake of pushing this through to the end, I'm labeling this extra work as out of scope for this assignment. 
-- I adapted CSS I had pre-written for a different project to format and display the card information used here.  
-- I used the `aymerick/raymond` golang `handlebars` library to dynamically construct entries for each card.
-> I chose this `handlebars` solution because it solved what I was initially going to construct by hand with a very simple and easy execution.
+  - All ten pre-sorted cards are rendered into a page that is then sent to the client. 
+  - This page organizes the cards into separate containers, displaying an image for the card on the left, and the data on the right. 
+  - CSS for this solution was recycled and modified from a previous project I worked on. 
+  - This is probably the aspect of this I know the least amount, I feel there needs to be cleanup done on this code to remove superfluous lines. But, it does the job I need it to do for this project. 
+
 ## Action Plan
 resources: [Getting Started](https://develop.battle.net/documentation/guides/getting-started), [API Guides](https://develop.battle.net/documentation/hearthstone/guides)
 
