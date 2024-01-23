@@ -94,6 +94,7 @@ func constructSite(c *client) []byte {
 func getSecrets() (secrets, error) {
 	// If the clientID and secret are passed as flags, use those.
 	if clientID != "" && secret != "" {
+		fmt.Println("Using flags")
 		return secrets{ClientID: clientID, Secret: secret}, nil
 	}
 	// Otherwise, read the secrets.json file.
