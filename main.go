@@ -64,17 +64,102 @@ func PrettyStruct(data interface{}) string {
 	return string(val)
 }
 
-// construcSite is a helper function that constructs the html page.
-// It uses raymond to render the html template.
-// I chose raymond because it's a simple and fast template engine. Same reason I chose goji.
-// This is the entry point for the client server that speaks to the blizzard api.
+// Construct the site using the secrets and criteria.
 func constructSite(s secrets, c criteria) []byte {
 	// Site is the html page that will be returned to the client.
 	site := []byte(`<!DOCTYPE html>`)
-
+	css := []byte(`
+	<style>
+	html, body{
+		height: 100%;
+		width: 100%;
+		font-family: 'Roboto', sans-serif;
+		background-color: hsl(264, 100%, 99%);
+		overflow:auto
+		}
+	h1 {
+		font-size: clamp(1.5rem, 7vw, 3rem);
+		text-align: left;
+	}
+	h2{
+		font-size: clamp(1.3rem, 5vw, 2rem);
+		text-align: left;
+	}
+	h3 {
+		font-size: clamp(1rem, 3vw, 1.5rem);
+		text-align: left;
+	}
+	p {
+		font-size: clamp(.5rem, 2vw, 1rem);
+		text-align: center;
+	}
+	.cards-container {
+		background-color: white;
+		align-items: center;
+		max-width: 90%;
+		max-height: auto;
+		display: grid;
+		grid-template-rows: repeat(.8fr, 1fr);
+		overflow: auto;
+		margin: 5px auto;
+		border-radius: 20px;
+		box-shadow: 0px 0px 10px rgb(181, 186, 191);
+	}
+	.card {
+		position: relative;
+		background-color: white;
+		align-items: left;
+		max-width: 80%;
+		max-height: auto;
+		display: grid;
+		grid-template-rows: repeat(.8fr, 1fr);
+		overflow: auto;
+		margin: 5px auto;
+		border-radius: 20px;
+		box-shadow: 0px 0px 10px rgb(181, 186, 191);
+	}
+	.card-image img {
+		max-width: 80%;
+		max-height: auto;
+		grid-row-start: 1;
+		display: grid;
+		width: 100%;
+		border-radius: 5px;
+	}
+	.card-body {
+		grid-column-start: 2;
+		display:table;
+		margin: 2rem 2rem 2rem 2rem;
+		background-color: white;
+	}
+	.card-body #name {
+		margin-left: 3rem;
+		grid-row-start: 2;
+		display:table;
+		margin: 2rem 2rem 2rem 2rem;
+		background-color: white;
+	.card-body #info {
+		margin-left: 3rem;
+		margin-right: 3rem;
+		font-size: clamp(.20rem, 1rem + .1vw, 3rem);
+		text-align: left;
+	}
+	</style>
+	`)
+	site = append(site, css...)
+	site = append(site, []byte(`<div class="cards-container">`)...)
 	// Source defines a card representation, and is used as a template for the raymond template engine.
 	source := `<div class="card">
+	<div class="card-image">
 	<img src="{{Image}}" alt="{{Name}}">
+	</div>
+	<div class="card-body">
+	<h id=name>{{Name}}</h>
+	<p id=info>Card Type: {{CardTypeID}}</p>
+	<p id=info>Card Class: {{ClassID}}</p>
+	<p id=info>Card Set: {{CardSetID}}</p>
+	<p id=info>Card Rarity: {{RarityID}}</p>
+	</div>
   </div>`
 
 	// Get the cards from the API.
@@ -97,6 +182,7 @@ func constructSite(s secrets, c criteria) []byte {
 		}
 		site = append(site, []byte(result)...)
 	}
+	site = append(site, []byte(`</div>`)...)
 	// return the site.
 	log.Default().Printf("Rendering Page")
 	return site
