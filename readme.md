@@ -5,13 +5,13 @@ I chose `Option 1: Software Engineering`, as I've been working on several active
 
 # About
 
-The project's primary goal is to communicate with the `Hearthstone API` to obtain several cards with set criteria and display those cards, sorted by card ID in a web app. 
+The project's primary goal is to communicate with the Hearthstone API to obtain several cards with set criteria and display those cards, sorted by card ID in a web app. 
 
 # How to use this
 - BlizApp, by default, will run a web app on `localhost:8080`, which can be accessed via the browser.
 - It will also log entries to the terminal for certain actions.
 
-> IMPORTANT: to run BlizApp, you must pass a `client id` and a `secret`. This can be done in two ways.
+> IMPORTANT: to run BlizApp, you must pass a client id and a secret. This can be done in two ways.
 
 *BlizApp `--help` information*
 ``` bash
@@ -48,9 +48,9 @@ The project's primary goal is to communicate with the `Hearthstone API` to obtai
  ### Abstraction
 This application needs to do several things. 
 - Host a Web Server that returns a formatted website with `ten` ID-sorted Hearthstone cards. 
-    - Handle Get requests for `/`
-    - Using a `secret` and `Client ID`, maintain an `API Key` with a half-life of `24` hours.
-    - Obtain a `deck` of `ten cards` that meet the criteria listed in the `criteria` section above.
+    - Handle incoming GET requests from clients. 
+    - Using a secret and Client ID, maintain an API Key with a half-life of 24 hours.
+    - Obtain a deck of ten cards that meet the criteria listed in the criteria section above.
     - Generate a web view of these cards, sorting them by Card ID
         - Each `Card` must display the card's `image`, `Name`, `Type`, `Rarity`, `Set,` and `Class.`
     - Pass this HTML and CSS code to the user. 
@@ -80,8 +80,8 @@ type CardsResponse struct {
  ## Proposed Solutions
  Let's break this up into constituent components. 
  1. `Web Server` - Handle Get Requests.
- 2. `API Client` - Negotiate connection with `Hearthstone` API.
- 3. `Site renderer` - Construct a Site based on the `deck` received from API, and a preconstructed template. 
+ 2. `API Client` - Negotiate connection with Hearthstone API.
+ 3. `Site renderer` - Construct a Site based on the deck received from API, and a preconstructed template. 
 
  ### Web Server
 The Webserver in this solution is a simple multiplexer `Goji` That receives an incoming GET request and returns a rendered webpage containing ten ID-sorted cards that meet the passed `criteria`
@@ -89,17 +89,17 @@ The Webserver in this solution is a simple multiplexer `Goji` That receives an i
 ### API Access Key
 The API Client has the `.GetAPIKey` method. \
 This method
-- Check if an API key exists, and if it's still valid If those checks fail -> use a stored `secret` and `client ID` to obtain a new `API key`
+- Check if an API key exists, and if it's still valid If those checks fail -> use a stored secret and client ID to obtain a new API key
 
-> `Secret` and `client ID` are passed via Command Line flags or read from `secrets.json,` a JSON file stored at the code's root directory, with the following construction.
-
-I understand this solution may not be an ideal industry standard. 
+> Secret and client ID are passed via Command Line flags or read from secrets.json, a JSON file stored at the code's root directory, with the following construction.
 
 Since secret keys are stored server-side, along with pages being prerendered before going to the user, there isn't an opportunity for them to be revealed( I am open to being wrong about this)
 
 Passing them as flags is useful for containerization, as long as you pass those values carefully, and store them in an encrypted fashion. 
 
-Storing them as unencrypted JSON files is the least secure (how I stored these during local testing); a future implementation of this would have me going down a long rabbit hole and coming out the other end with a much more elegant solution. 
+Storing them as unencrypted JSON files is the least secure (how I stored these during local testing); a future implementation of this would have me going down a long rabbit hole and coming out the other end with a much more elegant solution.
+
+> I understand these methods are not industry standard and likely contain security holes. This is only for use within the scope of this project. 
 
 ``` json
 {
@@ -126,9 +126,9 @@ type secrets struct {
 }
 
 ```
-Our API Client contains a `secrets` struct, that holds the `clientID` and `Secret`, along with the `API key` and its `expiration time`, and `criteria`, a `key` `value` map of `string` to `any` type. 
+Our API Client contains a secrets struct that holds the `clientID` and `Secret,` along with the API key, its expiration time, and `criteria`, a key value map of `string` to `any` type. 
 
-> For this project, the instantiation of a `criteria` object is called `params`, and contains the search criteria set by the project objective. 
+> For this project, the instantiation of a criteria object is called params, and contains the search criteria set by the project objective. 
 ``` go
 params = map[string]any{
     "sort":     "ID:asc",
