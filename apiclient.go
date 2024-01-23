@@ -55,7 +55,7 @@ type CardsResponse struct {
 }
 
 // Query Hearthstone api for cards matching a set criteria.
-func (c *client) GetCard() ([]Card, error) {
+func (c *client) getCard() ([]Card, error) {
 	var CardPages []CardsResponse
 	pages := 1
 	for i := 1; i <= pages; i++ {
@@ -110,8 +110,9 @@ func (c *client) GetCard() ([]Card, error) {
 	return r.Cards, nil
 }
 
-func (c *client) GetAPIKey() error {
-
+func (c *client) getAPIKey() error {
+	fmt.Println(c.apiKey)
+	fmt.Println(time.Now().Before(c.apiKeyExpiry))
 	if c.apiKey != "" && time.Now().Before(c.apiKeyExpiry) {
 		log.Default().Printf("API Key is still valid")
 		return nil
@@ -160,13 +161,12 @@ func (c *client) GetAPIKey() error {
 
 // cardPicker is the entry point for the client server that speaks to the blizzard api.
 // It returns a slice of 10 cards that match the criteria passed to it.
-func cardPicker(s secrets, c criteria) ([]Card, error) {
-	client := client{
-		secrets:  &s,
-		criteria: c,
+func (c *client) CardPicker() ([]Card, error) {
+	err := c.getAPIKey()
+	if err != nil {
+		return nil, err
 	}
-	client.GetAPIKey()
-	cards, err := client.GetCard()
+	cards, err := c.getCard()
 	if err != nil {
 		return nil, err
 	}

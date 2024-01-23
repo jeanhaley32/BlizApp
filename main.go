@@ -40,13 +40,17 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("failed to obtain secretes: %v", err))
 	}
+	client := &client{
+		criteria: params,
+		secrets:  &secs,
+	}
 	// Using the goji muxer to handle requests.
 	// I chose goji because it's a simple and fast muxer.
 	mux := goji.NewMux()
 	log.Default().Println("Starting server on localhost:8080")
 	mux.HandleFunc(pat.Get("/"), func(w http.ResponseWriter, r *http.Request) {
 		log.Default().Printf("Request recieved from %s", r.RemoteAddr)
-		w.Write(constructSite(secs, params))
+		w.Write(constructSite(client))
 	})
 	http.ListenAndServe("localhost:8080", mux)
 	log.Default().Println("Server stopped")
@@ -59,7 +63,7 @@ func PrettyStruct(data interface{}) string {
 }
 
 // Construct the site using the secrets and criteria.
-func constructSite(s secrets, c criteria) []byte {
+func constructSite(c *client) []byte {
 	// Site is the html page that will be returned to the client.
 	site := []byte(header) // header is defined in pagetemps.go
 	css := []byte(css)     // css is defined in pagetemps.go
@@ -67,7 +71,7 @@ func constructSite(s secrets, c criteria) []byte {
 	site = append(site, []byte(`<div class="cards-container">`)...)
 
 	// Get the cards from the API.
-	cards, err := cardPicker(s, c)
+	cards, err := c.CardPicker()
 	if err != nil {
 		panic(err)
 	}
