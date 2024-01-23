@@ -1,7 +1,7 @@
 # BlizApp
 BlizApp is my solution to Blizzard's take-home project. Part of their Application process for SRE. 
 
-I chose `Option 1: Software Engineering`, as I've been working on several active Golang projects of my own, and I feel like this would be a logical use of fresh information. 
+I chose `Option 1: Software Engineering`, as I've been working on several active Golang projects of my own, and I feel like this would be a logical use of fresh information. Along with a chance to learn something new.  
 
 # About
 
