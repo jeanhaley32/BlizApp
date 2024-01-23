@@ -154,11 +154,11 @@ func constructSite(s secrets, c criteria) []byte {
 	<img src="{{Image}}" alt="{{Name}}">
 	</div>
 	<div class="card-body">
-	<h id=name>{{Name}}</h>
-	<p id=info>Card Type: {{CardTypeID}}</p>
-	<p id=info>Card Class: {{ClassID}}</p>
-	<p id=info>Card Set: {{CardSetID}}</p>
-	<p id=info>Card Rarity: {{RarityID}}</p>
+	<h id=name>Name: {{Name}}</h>
+	<p id=info>Type: {{CardTypeID}}</p>
+	<p id=info>Class: {{ClassID}}</p>
+	<p id=info>Set: {{CardSetID}}</p>
+	<p id=info>Rarity: {{RarityID}}</p>
 	</div>
   </div>`
 
