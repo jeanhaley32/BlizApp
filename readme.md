@@ -65,17 +65,17 @@ The Webserver in this solution is a simple multiplexer `Goji` That receives an i
 ### API Access Key
 The API Client has the `.GetAPIKey` method. \
 This method
-- Check if an API key exists, and if it's still valid and If those checks fail -> uses a stored `secret` and `client ID` to obtain a new `API key`
+- Check if an API key exists, and if it's still valid If those checks fail -> use a stored `secret` and `client ID` to obtain a new `API key`
 
-> secret and client ID are either passed via Command Line flags, or read from `secrets.json`, a json file stored at the codes root directory, with the following construction.
+> `Secret` and `client ID` are passed via Command Line flags or read from `secrets.json,` a JSON file stored at the code's root directory, with the following construction.
 
-I understand that this solution may not be an industry standard or ideal one. 
+I understand this solution may not be an ideal industry standard. 
 
-Since secret keys are stored server-side, along with pages being prerendered before going to the user, I don't believe there is an opportunity for them to be revealed. 
+Since secret keys are stored server-side, along with pages being prerendered before going to the user, there isn't an opportunity for them to be revealed. 
 
 Passing them as flags is useful for containerization, as long as you pass those values carefully, and store them in an encrypted fashion. 
 
-Storing them as JSON files is probably the least secure (how I am doing it), a future implementation of this would have me going down a long rabbit hole, and coming out the other end with a much more elegant solution. 
+Storing them as unencrypted JSON files is the least secure (how I stored these during local testing); a future implementation of this would have me going down a long rabbit hole and coming out the other end with a much more elegant solution. 
 
 ``` json
 {
