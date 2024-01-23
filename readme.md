@@ -154,7 +154,7 @@ the client struct's `GetCard()` method is used to construct the appropriate URLs
   - All ten pre-sorted cards are rendered into a page that is then sent to the client. 
   - This page organizes the cards into separate containers, displaying an image for the card on the left, and the data on the right. 
   - CSS for this solution was recycled and modified from a previous project I worked on. 
-  - This is probably the aspect of this I know the least amount, I feel there needs to be cleanup done on this code to remove superfluous lines. But, it does the job I need it to do for this project. 
+  > This is probably the aspect of this I know the least amount, I feel there needs to be cleanup done on this code to remove superfluous lines. But, it does the job I need it to do for this project. 
   - Card data is stringified via an enum library defined in `enums.go` 
 
 ## Action Plan
