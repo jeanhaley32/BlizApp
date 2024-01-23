@@ -111,8 +111,6 @@ func (c *client) getCard() ([]Card, error) {
 }
 
 func (c *client) getAPIKey() error {
-	fmt.Println(c.apiKey)
-	fmt.Println(time.Now().Before(c.apiKeyExpiry))
 	if c.apiKey != "" && time.Now().Before(c.apiKeyExpiry) {
 		log.Default().Printf("API Key is still valid")
 		return nil

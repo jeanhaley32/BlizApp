@@ -166,7 +166,7 @@ resources: [Getting Started](https://develop.battle.net/documentation/guides/get
 | 1. Learn Endpoints and authentication requirements | Done |
 | 2. Determine how to securely store the API secret for communication | Done |
 | > Implement Web Server |  done |
-| 1. Use `Goji` to handle `HTTP` `Get` Requests| done  |
+| 1. Use `Goji` to handle `HTTP` `GET` Requests| done  |
 | > Implement API CliClient | done |
 | 1. Dependant on the primary`research` task above. | done |
 | > Create Server-Sider Renderer  | done |

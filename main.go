@@ -8,6 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"goji.io"
@@ -36,6 +38,11 @@ func init() {
 }
 
 func main() {
+	interruptlog()
+	defer func() {
+		log.Default().Println("Server stopped")
+		log.Default().Printf("Server ran for %s", time.Since(ServerstartTime))
+	}()
 	secs, err := getSecrets()
 	if err != nil {
 		panic(fmt.Errorf("failed to obtain secretes: %v", err))
@@ -44,8 +51,7 @@ func main() {
 		criteria: params,
 		secrets:  &secs,
 	}
-	// Using the goji muxer to handle requests.
-	// I chose goji because it's a simple and fast muxer.
+	// mux is the multiplexer that will handle the requests.
 	mux := goji.NewMux()
 	log.Default().Println("Starting server on localhost:8080")
 	mux.HandleFunc(pat.Get("/"), func(w http.ResponseWriter, r *http.Request) {
@@ -53,16 +59,15 @@ func main() {
 		w.Write(constructSite(client))
 	})
 	http.ListenAndServe("localhost:8080", mux)
-	log.Default().Println("Server stopped")
-	log.Default().Printf("Server ran for %s", time.Since(ServerstartTime))
 }
 
+// used for debugging. Kept around for future use.
 func PrettyStruct(data interface{}) string {
 	val, _ := json.MarshalIndent(data, "", "    ")
 	return string(val)
 }
 
-// Construct the site using the secrets and criteria.
+// Construct site triggers the api call, and constructs the html page that will be returned to the client.
 func constructSite(c *client) []byte {
 	// Site is the html page that will be returned to the client.
 	site := []byte(header) // header is defined in pagetemps.go
@@ -90,7 +95,9 @@ func constructSite(c *client) []byte {
 	return site
 }
 
-// getSecrets obtains the clientID and secret from the secrets.json file.
+// getSecrets returns a secrets struct containing the clientID and secret,
+// based on either the flags passed to the program, or the secrets.json file.
+// It prioritizes the flags.
 func getSecrets() (secrets, error) {
 	// If the clientID and secret are passed as flags, use those.
 	if clientID != "" && secret != "" {
@@ -108,4 +115,18 @@ func getSecrets() (secrets, error) {
 		return s, err
 	}
 	return s, nil
+}
+
+// interruptlog is a goroutine that will listen for SIGINT and SIGTERM signals,
+// and log the time the server ran for.
+func interruptlog() {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		sig := <-sigs
+		log.Default().Printf("Recieved %s, shutting down", sig)
+		log.Default().Println("Server stopped")
+		log.Default().Printf("Server ran for %s", time.Since(ServerstartTime))
+		os.Exit(0)
+	}()
 }
