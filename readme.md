@@ -5,7 +5,7 @@ I chose `Option 1: Software Engineering`, as I've been working on several active
 
 # About
 
-The primary goal of the project is to communicate with the `Hearthstone API` to obtain several cards with set criteria and display those cards, sorted by card ID in a web app. 
+The project's primary goal is to communicate with the `Hearthstone API` to obtain several cards with set criteria and display those cards, sorted by card ID in a web app. 
 
 ## Criteria
 - Obtain `10` cards
@@ -25,10 +25,10 @@ The primary goal of the project is to communicate with the `Hearthstone API` to 
 This application needs to do several things. 
 - Host a Web Server that returns a formatted website with `ten` ID-sorted Hearthstone cards. 
     - Handle Get requests for `/`
-    - Using a `secret` and `Client ID`, maintain an `API Key` with a halflife of `24` hours.
+    - Using a `secret` and `Client ID`, maintain an `API Key` with a half-life of `24` hours.
     - Obtain a `deck` of `ten cards` that meet the criteria listed in the `criteria` section above.
     - Generate a web view of these cards, sorting them by Card ID
-        - Each `Card` must display the card's `image`, `Name`, `Type`, `Rarity`, `Set`, and `Class`
+        - Each `Card` must display the card's `image`, `Name`, `Type`, `Rarity`, `Set,` and `Class.`
     - Pass this HTML and CSS code to the user. 
 
 > Here is the final struct used to house needed card data received from the Hearthstone API
@@ -63,10 +63,9 @@ type CardsResponse struct {
 The Webserver in this solution is a simple multiplexer `Goji` That receives an incoming GET request and returns a rendered webpage containing ten ID-sorted cards that meet the passed `criteria`
 
 ### API Access Key
-the API Client has the`.`GetAPIKey` method.\
+The API Client has the `.GetAPIKey` method. \
 This method
-Check if an API key exists, and if it's still valid.
-2. Uses a stored `secret` and `client ID` to obtain a new `API key` if it fails those checks. 
+- Check if an API key exists, and if it's still valid and If those checks fail -> uses a stored `secret` and `client ID` to obtain a new `API key`
 
 > secret and client ID are either passed via Command Line flags, or read from `secrets.json`, a json file stored at the codes root directory, with the following construction.
 
