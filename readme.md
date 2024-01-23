@@ -5,7 +5,7 @@ I chose `Option 1: Software Engineering`, as I've been working on several active
 
 # About
 
-The primary goal of the project is to communicate with the `Hearthstone API` to obtain several cards with set criteria and display those cards, sorted by card ID, in a web app. 
+The primary goal of the project is to communicate with the `Hearthstone API` to obtain several cards with set criteria and display those cards, sorted by card ID in a web app. 
 
 ## Criteria
 - Obtain `10` cards
@@ -25,9 +25,9 @@ The primary goal of the project is to communicate with the `Hearthstone API` to 
 This application needs to do several things. 
 - Host a Web Server that returns a formatted website with `ten` ID-sorted Hearthstone cards. 
     - Handle Get requests for `/`
-    - Host an API secret used for communication with the Heartstone API
-    - Obtain a `deck` of `ten cards`` that meet the criteria listed above
-    - Generate an HTML + CSS `View` of these cards, sorting them by Card ID
+    - Using a `secret` and `Client ID`, maintain an `API Key` with a halflife of `24` hours.
+    - Obtain a `deck` of `ten cards` that meet the criteria listed in the `criteria` section above.
+    - Generate a web view of these cards, sorting them by Card ID
         - Each `Card` must display the card's `image`, `Name`, `Type`, `Rarity`, `Set`, and `Class`
     - Pass this HTML and CSS code to the user. 
 

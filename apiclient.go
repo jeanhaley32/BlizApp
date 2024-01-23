@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -15,14 +14,11 @@ import (
 )
 
 const (
-	// The URL for the Blizzard API.
-	apiURL = "https://us.api.blizzard.com/hearthstone/cards/"
-	// The URL for the Blizzard API token.
+	apiURL   = "https://us.api.blizzard.com/hearthstone/cards/"
 	tokenURL = "https://oauth.battle.net/token"
-	// Define Page Limit
-	pageLimit = 2
-	// Define Locale
-	locale = "en_US"
+	// limit set for pagination.
+	pageLimit = 1
+	locale    = "en_US"
 )
 
 type secrets struct {
@@ -39,7 +35,6 @@ type client struct {
 	criteria     criteria
 }
 
-// Card struct for the Hearthstone API.
 type Card struct {
 	ID         int    `json:"id"`
 	ClassID    class  `json:"classId"`
@@ -55,9 +50,6 @@ type Card struct {
 type rarity int
 type class int
 
-// Creating this enum logic allows me to easily set filter parameters,
-// and also to easily print those values. I tend to use this pattern alot
-// in my code, and find alot of value in it.
 const (
 	legendary rarity = 5
 	druid     class  = 2
@@ -79,37 +71,26 @@ func (c class) String() string {
 		return "druid"
 	case warlock:
 		return "warlock"
-	case 12:
-		return "warlock"
 	default:
 		return "unknown"
 	}
 }
 
-// CardsResponse struct for the Hearthstone API.
 type CardsResponse struct {
 	Cards []Card `json:"cards"`
 }
 
-// Obtain 10 cards from the Hearthstone API.
-func (c *client) GetCard() []Card {
+// Query Hearthstone api for cards matching a set criteria.
+func (c *client) GetCard() ([]Card, error) {
 	var CardPages []CardsResponse
-	// There is logic here to handle multiple pages of results. From what I can tell, the criteria set for this
-	// challenge will only return 1 pages of results.
-	// I want to write logic that will actually scale the number of pages returned based on information recieved from the API.
-	// But that is outside the scope of this challenge.
 	for i := 1; i <= pageLimit; i++ {
 		url := apiURL + "?locale=" + locale + "&access_token=" + c.apiKey + "&page=" + fmt.Sprintf("%v", i)
-		// append the search creteria to the url.
 		for k, v := range c.criteria {
-			// Check if value is a slice.
 			if reflect.TypeOf(v).Kind() == reflect.Slice {
-				// append the slice to the url, in format k=v1,v2,v3...
 				url += "&" + k + "="
 				for _, i := range v.([]any) {
 					url += fmt.Sprintf("%v", i) + ","
 				}
-				// remove the trailing comma.
 				url = strings.TrimSuffix(url, ",")
 				continue
 			} else {
@@ -119,55 +100,49 @@ func (c *client) GetCard() []Card {
 		}
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		client := &http.Client{}
 		resp, err := client.Do(req)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		defer resp.Body.Close()
+		fmt.Println(resp)
 		cardPage := CardsResponse{}
-		// Read the response body to a string
 		err = json.NewDecoder(resp.Body).Decode(&cardPage)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
-
 		CardPages = append(CardPages, cardPage)
 	}
-	// Decode the JSON response
+	if len(CardPages) == 0 {
+		return nil, fmt.Errorf("no cards returned from the API")
+	}
+
 	var r CardsResponse
 	for _, page := range CardPages {
 		r.Cards = append(r.Cards, page.Cards...)
 	}
-	// return the cards.
-	return r.Cards
+	return r.Cards, nil
 }
 
-// Constructing a Get request for client credentials.
-func (c *client) GetAPIKey() {
+func (c *client) GetAPIKey() error {
 
-	// Check if the API Key is still valid.
 	if c.apiKey != "" && time.Now().Before(c.apiKeyExpiry) {
-		fmt.Println("API Key is still valid.")
-		return
+		return fmt.Errorf("API Key is still valid")
 	}
 
-	// Check if the clientID and secret are set.
 	if c.secrets.clientID == "" || c.secrets.secret == "" {
-		fmt.Println("ClientID or Secret is not set.")
-		return
+		return fmt.Errorf("ClientID or Secret is not set")
 	}
 
-	// Define the response struct.
 	type Response struct {
 		Access_token string `json:"access_token"`
 		Expires_in   int    `json:"expires_in"`
 	}
 
-	// Encode the clientID and clientSecret for the request.
 	authdata := c.secrets.clientID + ":" + c.secrets.secret
 
 	formData := url.Values{
@@ -183,7 +158,7 @@ func (c *client) GetAPIKey() {
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	defer resp.Body.Close()
@@ -192,34 +167,29 @@ func (c *client) GetAPIKey() {
 
 	err = json.NewDecoder(resp.Body).Decode(&r)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	c.apiKey = r.Access_token
 	c.apiKeyExpiry = time.Now().Add(time.Duration(r.Expires_in) * time.Second)
-
+	return nil
 }
 
-// Requests a block of cards from the Hearthstone API, and returns 10 random cards.
-func cardPicker(s secrets, c criteria) []Card {
-	// Pass the clientID and secret to the client struct.
-	// Passing a criteria map that is optional, but can be used to filter the
-	// results of the API call. This is not optional for this project.
+func cardPicker(s secrets, c criteria) ([]Card, error) {
 	client := client{
 		secrets:  &s,
 		criteria: c,
 	}
 	client.GetAPIKey()
-	cards := client.GetCard()
-	// Shuffle the cards.
+	cards, err := client.GetCard()
+	if err != nil {
+		return nil, err
+	}
 	rand.Shuffle(len(cards), func(i, j int) {
 		cards[i], cards[j] = cards[j], cards[i]
 	})
-	// grab the first 10 cards.
 	cards = cards[:10]
-	// organize cards by ID.
-	sort.Slice(cards, func(i, j int) bool {
+	sort.SliceStable(cards, func(i, j int) bool {
 		return cards[i].ID < cards[j].ID
 	})
-
-	return cards
+	return cards, nil
 }
