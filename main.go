@@ -15,11 +15,6 @@ import (
 	"goji.io/pat"
 )
 
-type secrets struct {
-	ClientID string `json:"clientid"`
-	Secret   string `json:"secret"`
-}
-
 var (
 	clientID, secret, jsonFile string
 	ServerstartTime            time.Time

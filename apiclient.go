@@ -62,6 +62,11 @@ func (r rarity) String() string {
 	}
 }
 
+type secrets struct {
+	ClientID string `json:"clientid"`
+	Secret   string `json:"secret"`
+}
+
 func (c class) String() string {
 	switch c {
 	case druid:
@@ -137,7 +142,8 @@ func (c *client) GetCard() ([]Card, error) {
 func (c *client) GetAPIKey() error {
 
 	if c.apiKey != "" && time.Now().Before(c.apiKeyExpiry) {
-		return fmt.Errorf("API Key is still valid")
+		log.Default().Printf("API Key is still valid")
+		return nil
 	}
 	log.Default().Println("Getting API Key")
 	if c.secrets.ClientID == "" || c.secrets.Secret == "" {
