@@ -95,7 +95,7 @@ This method
 
 I understand this solution may not be an ideal industry standard. 
 
-Since secret keys are stored server-side, along with pages being prerendered before going to the user, there isn't an opportunity for them to be revealed. 
+Since secret keys are stored server-side, along with pages being prerendered before going to the user, there isn't an opportunity for them to be revealed( I am open to being wrong about this)
 
 Passing them as flags is useful for containerization, as long as you pass those values carefully, and store them in an encrypted fashion. 
 
