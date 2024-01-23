@@ -7,6 +7,30 @@ I chose `Option 1: Software Engineering`, as I've been working on several active
 
 The project's primary goal is to communicate with the `Hearthstone API` to obtain several cards with set criteria and display those cards, sorted by card ID in a web app. 
 
+# How to use this
+- BlizApp, by default, will run a web app on `localhost:8080`, which can be accessed via the browser.
+- It will also log entries to the terminal for certain actions.
+
+> IMPORTANT: to run BlizApp, you must pass a `client id` and a `secret`. This can be done in two ways.
+
+*BlizApp `--help` information*
+``` bash
+  -clientid string
+    	clientID for the blizzard api
+  -json string
+    	json file containing the clientID and secret (default "secrets.json")
+  -secret string
+    	secret for the blizzard API
+```
+1. Pass the values via the `clientid` and `secret` flags ``` go run . --clientid=<client id> --secret=<secret>```
+2. You can also create a json file named `secrets.json` and append the `client id` and `secret` here.
+``` json
+{
+  "clientid": "<client id>",
+  "secret" :  "<secret>"
+}
+```
+
 ## Criteria
 - Obtain `10` cards
 - either class `Druid` or `Warlock`
