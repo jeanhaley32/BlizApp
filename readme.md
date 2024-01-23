@@ -140,7 +140,15 @@ params = map[string]any{
 the client struct's `GetCard()` method is used to construct the appropriate URLs to obtain cards from the Hearthstone API server.
 
 - This method returns a slice of cards with the information that we need to meet this project's objectives. 
-- We construct the `outbound URL` and append all of the necessary search parameters from the `criteria` object, this function supports multiple values for a single search parameter by using reflection to see when an entry is a slice and appends both values to the URL as comma-separated entries. 
+- We construct the `outbound URL` and append all of the necessary search parameters from the `criteria` object, this function supports multiple values for a single search parameter by using reflection to see when an entry is a slice and appends both values to the URL as comma-separated entries.
+
+ ### Pagination
+  The server implementation I created supports paginations. It does this by reading the `pages` field provided by our initial call to the `hearthstone` API and modifying the loops target to this int. 
+  This is not necessary for the bounds of this project, as with the filtered restrictions, we only ever see a max of 16 cards, which will only ever fit on one page. But I noticed the pagination and had fun
+  solving the problem. I tested this with a much broader filter and verified I was able to process multiple pages; I added a limit (set to ten) because 140 pages take far too long. 
+
+  Since pagination was not really necessary, I stopped myself from further improving on this. But I can think of a few ideas to get more cards in a single request and reduce pagination requests to one or two. I think you might be able to 
+  make a request for multiple pages by adding in comma-separated values, that's how I was able to gather a mix of card classes in one request. But I'm not going to mess with this further. 
  
  ### Server-Side Renderer
   - All ten pre-sorted cards are rendered into a page that is then sent to the client. 
