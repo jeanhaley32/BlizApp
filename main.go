@@ -45,7 +45,7 @@ func main() {
 	}()
 	secs, err := getSecrets()
 	if err != nil {
-		panic(fmt.Errorf("failed to obtain secretes: %v", err))
+		panic(fmt.Errorf("failed to obtain secrets: %v", err))
 	}
 	client := &client{
 		criteria: params,
@@ -104,9 +104,14 @@ func getSecrets() (secrets, error) {
 		fmt.Println("Using flags")
 		return secrets{ClientID: clientID, Secret: secret}, nil
 	}
+	// return an error if the json file does not exist.
+	if _, err := os.Stat(jsonFile); os.IsNotExist(err) {
+		return secrets{}, fmt.Errorf("no client id or secret flags sent, no %v file found", jsonFile)
+	}
+
 	// Otherwise, read the secrets.json file.
 	var s secrets
-	file, err := os.ReadFile("secrets.json")
+	file, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return s, err
 	}
