@@ -69,6 +69,7 @@ func PrettyStruct(data interface{}) string {
 
 // Construct site triggers the api call, and constructs the html page that will be returned to the client.
 func constructSite(c *client) []byte {
+	renderStart := time.Now()
 	// Site is the html page that will be returned to the client.
 	site := []byte(header) // header is defined in pagetemps.go
 	css := []byte(css)     // css is defined in pagetemps.go
@@ -92,6 +93,7 @@ func constructSite(c *client) []byte {
 	site = append(site, []byte(`</div>`)...)
 	// return the site.
 	log.Default().Printf("Rendering Page")
+	log.Default().Printf("Page rendered in %s", time.Since(renderStart))
 	return site
 }
 
