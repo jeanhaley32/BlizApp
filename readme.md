@@ -8,11 +8,12 @@ I chose `Option 1: Software Engineering`, as I've been working on several active
 The project's primary goal is to communicate with the Hearthstone API to obtain several cards with set criteria and display those cards, sorted by card ID in a web app. 
 
 # How to use this
-- BlizApp, by default, will run a web app on `localhost:8080`, which can be accessed via the browser.
+- BlizApp, by default, will run a web app on `localhost:8080` which can be accessed via the browser.
 - It will also log entries to the terminal for certain actions.
 
-> IMPORTANT: to run BlizApp, you must pass a client id and a secret. This can be done in two ways.
-
+> IMPORTANT: to run BlizApp, you must pass a client ID and a secret. This can be done in two ways.
+1. Pass the values via the `clientid` and `secret` flags ```go run . --clientid=<client id> --secret=<secret>```
+2. You can also create a JSON file named `secrets.json` and append the `client `ID and `secret` here.
 *BlizApp `--help` information*
 ``` bash
   -clientid string
@@ -22,9 +23,9 @@ The project's primary goal is to communicate with the Hearthstone API to obtain 
   -secret string
     	secret for the blizzard API
 ```
-1. Pass the values via the `clientid` and `secret` flags ```go run . --clientid=<client id> --secret=<secret>```
-2. You can also create a JSON file named `secrets.json` and append the `client `ID and `secret` here.
+
 To build a binary for it, in case you need to do so, you should be able to run 
+
 ```go
 go build Blizapp
 ```
@@ -57,10 +58,10 @@ This application needs to do several things.
 ``` Golang
 type Card struct {
 	ID         int    `json:"id"`
-	ClassID    class  `json:"classId"`
-	CardTypeID int    `json:"cardTypeId"`
-	CardSetID  int    `json:"cardSetId"`
-	RarityID   rarity `json:"rarityId"`
+	ClassID    Class  `json:"classId"`
+	CardTypeID Type   `json:"cardTypeId"`
+	CardSetID  Set    `json:"cardSetId"`
+	RarityID   Rarity `json:"rarityId"`
 	ManaCost   int    `json:"manaCost"`
 	Name       string `json:"name"`
 	Text       string `json:"text"`
@@ -73,13 +74,11 @@ type CardsResponse struct {
 }
 
 ```
-
-
  ## Proposed Solutions
  Let's break this up into constituent components. 
  1. `Web Server` - Handle Get Requests.
- 2. `API Client` - Negotiate connection with Hearthstone API.
- 3. `Site renderer` - Construct a Site based on the deck received from API, and a preconstructed template. 
+ 2. `API Client` - Maintain the API Key and negotiate the connection with Hearthstone API.
+ 3. `Site renderer` - Construct a Site based on the deck received from API and a preconstructed template. 
 
  ### Web Server
 The Webserver in this solution is a simple multiplexer `Goji` That receives an incoming GET request and returns a rendered webpage containing ten ID-sorted cards that meet the passed `criteria`
@@ -87,9 +86,16 @@ The Webserver in this solution is a simple multiplexer `Goji` That receives an i
 ### API Access Key
 The API Client has the `.GetAPIKey` method. \
 This method
-- Check if an API key exists, and if it's still valid If those checks fail -> use a stored secret and client ID to obtain a new API key
+- Check if an API key exists and if it's still valid. If those checks fail -> use a stored secret and client ID to obtain a new API key
 
 > Secret and client ID are passed via Command Line flags or read from secrets.json, a JSON file stored at the code's root directory, with the following construction.
+> 
+``` json
+{
+  "clientid": "<client id>",
+  "secret" :  "<secret>"
+}
+```
 
 Since secret keys are stored server-side, along with pages being prerendered before going to the user, there isn't an opportunity for them to be revealed( I am open to being wrong about this)
 
@@ -98,13 +104,6 @@ Passing them as flags is useful for containerization, as long as you pass those 
 Storing them as unencrypted JSON files is the least secure (how I stored these during local testing); a future implementation of this would have me going down a long rabbit hole and coming out the other end with a much more elegant solution.
 
 > I understand these methods are not industry standard and likely contain security holes. This is only for use within the scope of this project. 
-
-``` json
-{
-  "clientid": "<client id>",
-  "secret" :  "<secret>"
-}
-```
 
  ### API Client
 ```go
