@@ -14,6 +14,8 @@ The project's primary goal is to communicate with the Hearthstone API to obtain 
 > IMPORTANT: to run BlizApp, you must pass a client ID and a secret. This can be done in two ways.
 1. Pass the values via the `clientid` and `secret` flags ```go run . --clientid=<client id> --secret=<secret>```
 2. You can also create a JSON file named `secrets.json` and append the `client `ID and `secret` here.
+
+
 *BlizApp `--help` information*
 ``` bash
   -clientid string
