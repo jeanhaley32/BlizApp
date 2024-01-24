@@ -23,8 +23,10 @@ const (
 
 var pageLimit = 10
 
+// criteria type is used to define a map of query parameters for the API call.
 type criteria map[string]any
 
+// client is the struct that holds the secrets, apikey, and criteria for the API call.
 type client struct {
 	secrets      *secrets
 	apiKey       string
@@ -32,6 +34,7 @@ type client struct {
 	criteria     criteria
 }
 
+// Card holds just the data we need for a single Hearthstone card.
 type Card struct {
 	ID         int    `json:"id"`
 	ClassID    Class  `json:"classId"`
@@ -44,35 +47,27 @@ type Card struct {
 	Image      string `json:"image"`
 }
 
+// secrets is the struct that holds the clientID and secret for the API call.
 type secrets struct {
 	ClientID string `json:"clientid"`
 	Secret   string `json:"secret"`
 }
 
+// Card Response is the upper level struct that holds the cards and page count.
+// page count is used for pagination.
 type CardsResponse struct {
 	Cards     []Card `json:"cards"`
 	PageCount int    `json:"pageCount"`
 }
 
-// Query Hearthstone api for cards matching a set criteria.
+// GetCard is the function that makes the API call and returns a slice of cards.
 func (c *client) getCard() ([]Card, error) {
 	var CardPages []CardsResponse
 	pages := 1
 	for i := 1; i <= pages; i++ {
 		url := apiURL + "?locale=" + locale + "&access_token=" + c.apiKey + "&page=" + fmt.Sprintf("%v", i)
-		for k, v := range c.criteria {
-			if reflect.TypeOf(v).Kind() == reflect.Slice {
-				url += "&" + k + "="
-				for _, i := range v.([]any) {
-					url += fmt.Sprintf("%v", i) + ","
-				}
-				url = strings.TrimSuffix(url, ",")
-				continue
-			} else {
-				// append the search criteria to the url. format k=v
-				url += "&" + k + "=" + fmt.Sprintf("%v", v)
-			}
-		}
+		// concatenate the criteria to the url.
+		url += concatCriteria(&c.criteria)
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return nil, err
@@ -177,4 +172,27 @@ func (c *client) CardPicker() ([]Card, error) {
 	})
 	log.Default().Printf("Pulled and sorted %v cards\n", len(cards))
 	return cards, nil
+}
+
+// concatCriteria takes a criteria struct and turns them into a string to be appended to the url.
+func concatCriteria(c *criteria) string {
+	var result string
+	for k, v := range *c {
+		// if the value is a slice, append each value to the url.
+		// This allows us to append multiple values to the same query parameter.
+		if reflect.TypeOf(v).Kind() == reflect.Slice {
+			result += "&" + k + "="
+			for _, i := range v.([]any) {
+				result += fmt.Sprintf("%v", i) + ","
+			}
+			// trim the trailing comma.
+			// This doesn't effect the efficacy of the url, but it looks nicer.
+			result = strings.TrimSuffix(result, ",")
+			continue
+		} else {
+			// append the search criteria to the url. format k=v
+			result += "&" + k + "=" + fmt.Sprintf("%v", v)
+		}
+	}
+	return result
 }
