@@ -142,11 +142,10 @@ the client struct's `GetCard()` method is used to construct the appropriate URLs
 
  ### Pagination
   The server implementation I created supports paginations. It does this by reading the `pages` field provided by our initial call to the Hearthstone API and modifying the loop target to this int. 
-  This is not necessary for the bounds of this project, as with the filtered restrictions, we only ever see a max of 16 cards, which will only ever fit on one page. However I noticed the pagination and had fun
+  This is not necessary for the bounds of this project, as with the filtered restrictions, we only ever see a max of 16 cards, which will only ever fit on one page. However, I noticed the pagination and had fun
   solving the problem. I tested this with a much broader filter and verified I was able to process multiple pages; I added a limit (set to ten) because 140 pages take far too long. 
 
-  Since pagination was not really necessary, I stopped myself from further improving on this. But I can think of a few ideas to get more cards in a single request and reduce pagination requests to one or two. I think you might be able to 
-  make a request for multiple pages by adding comma-separated values, that's how I was able to gather a mix of card classes in one request. But I'm not going to mess with this further. 
+  Since pagination was not necessary, I stopped myself from further improving on this. But I can think of a few ideas to get more cards in a single request and reduce pagination requests to one or two. I think you might be able to request multiple pages by adding comma-separated values, that's how I was able to gather a mix of card classes in one request. But I'm not going to mess with this further. 
  
  ### Server-Side Renderer
   - All ten pre-sorted cards are rendered into a page that is then sent to the client. 
