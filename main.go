@@ -44,8 +44,7 @@ func init() {
 }
 
 func main() {
-	// interruptlog is a goroutine that will listen for SIGINT and SIGTERM signals,
-	// and will log and exit the client.
+	// start the interruptlog goroutine.
 	interruptlog()
 	defer func() {
 		// exitSeq is a function that will log the time the server ran for, and exit the program.
