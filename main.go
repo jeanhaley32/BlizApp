@@ -19,7 +19,12 @@ import (
 var (
 	clientID, secret, jsonFile string
 	ServerstartTime            time.Time
-	// params is a map of the query parameters that will be sent to the api.
+	// Constructed query parameters for the API call.
+	// The key is the name of the query parameter, and the value is the value of the query parameter.
+	// The value can be a single value or a slice of values.
+	// Enums like 'rarity' and 'class' are defined in enums.go.
+	// Use slices for multiple values in a query parameter.
+	// Reflection is used to handle slices of multiple values when ingesting params.
 	params = map[string]any{
 		"sort":     "ID:asc",
 		"manaCost": 7,
@@ -30,6 +35,7 @@ var (
 
 // initializaztion function, called before main.
 func init() {
+	// ServerstartTime is used to calculate the time the server ran for.
 	ServerstartTime = time.Now()
 	flag.StringVar(&jsonFile, "json", "secrets.json", "json file containing the clientID and secret")
 	flag.StringVar(&clientID, "clientid", "", "clientID for the blizzard api")
@@ -38,11 +44,14 @@ func init() {
 }
 
 func main() {
+	// interruptlog is a goroutine that will listen for SIGINT and SIGTERM signals,
+	// and will log and exit the client.
 	interruptlog()
 	defer func() {
-		log.Default().Println("Server stopped")
-		log.Default().Printf("Server ran for %s", time.Since(ServerstartTime))
+		// exitSeq is a function that will log the time the server ran for, and exit the program.
+		exitSeq(nil)
 	}()
+	// getSecrets returns a secrets struct containing the clientID and secret,
 	secs, err := getSecrets()
 	if err != nil {
 		exitSeq(fmt.Errorf("failed to obtain secrets: %v", err))
@@ -51,7 +60,7 @@ func main() {
 		criteria: params,
 		secrets:  &secs,
 	}
-	// mux is the multiplexer that will handle the requests.
+	// Using Goji to handle the routing.
 	mux := goji.NewMux()
 	log.Default().Println("Starting server on localhost:8080")
 	mux.HandleFunc(pat.Get("/"), func(w http.ResponseWriter, r *http.Request) {
@@ -70,19 +79,20 @@ func PrettyStruct(data interface{}) string {
 // Construct site triggers the api call, and constructs the html page that will be returned to the client.
 func constructSite(c *client) []byte {
 	renderStart := time.Now()
+	log.Default().Printf("Rendering Page")
 	// Site is the html page that will be returned to the client.
 	site := []byte(header) // header is defined in pagetemps.go
 	css := []byte(css)     // css is defined in pagetemps.go
 	site = append(site, css...)
 	site = append(site, []byte(`<div class="cards-container">`)...)
 
-	// Get the cards from the API.
+	// Card picker is the entry point for the client server that speaks to the blizzard api.
 	cards, err := c.CardPicker()
 	if err != nil {
 		exitSeq(err)
 	}
 
-	// Render the template, and append the result to the site.
+	// This loop constructs the final
 	for _, card := range cards {
 		result := fmt.Sprintf(source,
 			card.Image, card.Name, card.Name,
@@ -90,9 +100,8 @@ func constructSite(c *client) []byte {
 			card.CardSetID, card.RarityID)
 		site = append(site, []byte(result)...)
 	}
-	site = append(site, []byte(`</div>`)...)
-	// return the site.
-	log.Default().Printf("Rendering Page")
+	// footer is defined in pagetemps.go
+	site = append(site, []byte(footer)...)
 	log.Default().Printf("Page rendered in %s", time.Since(renderStart))
 	return site
 }
