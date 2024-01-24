@@ -45,7 +45,7 @@ func main() {
 	}()
 	secs, err := getSecrets()
 	if err != nil {
-		panic(fmt.Errorf("failed to obtain secrets: %v", err))
+		exitSeq(fmt.Errorf("failed to obtain secrets: %v", err))
 	}
 	client := &client{
 		criteria: params,
@@ -78,7 +78,7 @@ func constructSite(c *client) []byte {
 	// Get the cards from the API.
 	cards, err := c.CardPicker()
 	if err != nil {
-		panic(err)
+		exitSeq(err)
 	}
 
 	// Render the template, and append the result to the site.
@@ -101,7 +101,7 @@ func constructSite(c *client) []byte {
 func getSecrets() (secrets, error) {
 	// If the clientID and secret are passed as flags, use those.
 	if clientID != "" && secret != "" {
-		fmt.Println("Using flags")
+		log.Default().Println("Using flags")
 		return secrets{ClientID: clientID, Secret: secret}, nil
 	}
 	// return an error if the json file does not exist.
@@ -123,15 +123,23 @@ func getSecrets() (secrets, error) {
 }
 
 // interruptlog is a goroutine that will listen for SIGINT and SIGTERM signals,
-// and log the time the server ran for.
+// and will run exitSeq when it recieves one.
 func interruptlog() {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		sig := <-sigs
-		log.Default().Printf("Recieved %s, shutting down", sig)
-		log.Default().Println("Server stopped")
-		log.Default().Printf("Server ran for %s", time.Since(ServerstartTime))
-		os.Exit(0)
+		log.Default().Printf("Recieved %v signal", sig)
+		exitSeq(nil)
 	}()
+}
+
+// exitSeq is a function that will log the time the server ran for, and exit the program.
+func exitSeq(e error) {
+	if e != nil {
+		log.Default().Printf("Error: %v", e)
+	}
+	log.Default().Println("Server stopped")
+	log.Default().Printf("Server ran for %s", time.Since(ServerstartTime))
+	os.Exit(0)
 }
