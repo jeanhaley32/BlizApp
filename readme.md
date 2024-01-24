@@ -166,13 +166,12 @@ resources: [Getting Started](https://develop.battle.net/documentation/guides/get
 | > Research Hearthstone API Documentation| Done | 
 | 1. Learn Endpoints and authentication requirements | Done |
 | 2. Determine how to securely store the API secret for communication | Done |
-| > Implement Web Server |  done |
-| 1. Use `Goji` to handle `HTTP` `GET` Requests| done  |
-| > Implement API CliClient | done |
-| 1. Dependant on the primary`research` task above. | done |
-| > Create Server-Sider Renderer  | done |
-| 1. Design web template to use when rendering `Deck` | done |
-| 2. append `cards` in `deck` to template, and construct the rendered site | done |
-
+| > Implement Web Server |  Done |
+| 1. Use `Goji` to handle `HTTP` `GET` Requests| Done  |
+| > Implement API CliClient | Done |
+| 1. Dependant on the primary`research` task above. | Done |
+| > Create Server-Sider Renderer  | Done |
+| 1. Design web template to use when rendering `Deck` | Done |
+| 2. append `cards` in `deck` to template, and construct the rendered site | Done |
 
 ---
