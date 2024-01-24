@@ -154,6 +154,10 @@ the client struct's `GetCard()` method is used to construct the appropriate URLs
   > This is probably the aspect of this I know the least amount, I feel there needs to be cleanup done on this code to remove superfluous lines. But, it does the job I need it to do for this project. 
   - Card data is stringified via an enum library defined in `enums.go` 
 
+## Know bugs
+  - There is a chance of "duplicate" cards being pulled. `Malorne` specifically. This is because it was released in two separate sets. 
+  - I am choosing to not treat this as a mistake, although both cards share the same specs and image, they both have different `set` values and above all they have different `IDs`.  
+
 ## Action Plan
 resources: [Getting Started](https://develop.battle.net/documentation/guides/getting-started), [API Guides](https://develop.battle.net/documentation/hearthstone/guides)
 
