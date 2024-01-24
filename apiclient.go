@@ -106,20 +106,24 @@ func (c *client) getCard() ([]Card, error) {
 }
 
 func (c *client) getAPIKey() error {
+	// If the api key is still valid, don't get a new one.
 	if c.apiKey != "" && time.Now().Before(c.apiKeyExpiry) {
 		log.Default().Printf("API Key is still valid")
 		return nil
 	}
 	log.Default().Println("Getting API Key")
+	// If the clientID and secret are not set, return an error.
 	if c.secrets.ClientID == "" || c.secrets.Secret == "" {
 		return fmt.Errorf("ClientID or Secret is not set")
 	}
 
+	// Data return from the API call is stored here.
 	type Response struct {
 		Access_token string `json:"access_token"`
 		Expires_in   int    `json:"expires_in"`
 	}
 
+	// Concatenate the clientID and secret for the basic auth header.
 	authdata := c.secrets.ClientID + ":" + c.secrets.Secret
 
 	formData := url.Values{
@@ -130,8 +134,16 @@ func (c *client) getAPIKey() error {
 		strings.NewReader(formData.Encode()))
 
 	req.Header.Add(("Content-Type"), "application/x-www-form-urlencoded")
+	// authdata is encoded to base64 and added to the header.
+	// base64 is used for basic auth as is specified in section 2.3.1 Client Password of rfc6749
+	// https://datatracker.ietf.org/doc/html/rfc6749#section-1.3.4:~:text=2.3.1.%20%20Client%20Password
+	// just for fun, the basic authentication sscheme is defined in rfc2617
+	// https://datatracker.ietf.org/doc/html/rfc2617#section-2:~:text=2%20Basic%20Authentication%20Scheme
+	// I didn't know this before this project, so this was a fun learning experience.
 	req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(authdata)))
-
+	fmt.Println(base64.StdEncoding.EncodeToString([]byte(authdata)))
+	fmt.Println(req)
+	// Create a new http client and make the request.
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
