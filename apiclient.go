@@ -65,28 +65,38 @@ func (c *client) getCard() ([]Card, error) {
 	var CardPages []CardsResponse
 	pages := 1
 	for i := 1; i <= pages; i++ {
+		// build the prefix of the url, before the query parameters.
+		// This includes the locale, apikey, and page number.
+		// page number will be incremented in the loop, in the case of pagination.
 		url := apiURL + "?locale=" + locale + "&access_token=" + c.apiKey + "&page=" + fmt.Sprintf("%v", i)
 		// concatenate the criteria to the url.
 		url += concatCriteria(&c.criteria)
+		// Make a new http GET request using the constructed URL.
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return nil, err
 		}
+		// instantiate a new http client and make the request.
 		client := &http.Client{}
 		resp, err := client.Do(req)
 		if err != nil {
 			return nil, err
 		}
+		// defer closing the response body until the function returns.
 		defer resp.Body.Close()
+		// Decode the response body into a CardsResponse struct.
 		cardPage := CardsResponse{}
 		err = json.NewDecoder(resp.Body).Decode(&cardPage)
 		if err != nil {
 			return nil, err
 		}
+		// append the page to the CardPages slice.
 		CardPages = append(CardPages, cardPage)
+		// if the page limit is reached, break the loop.
 		if i == pageLimit {
 			break
 		}
+		// set the pages variable to the page count returned from the API.
 		pages = cardPage.PageCount
 	}
 	log.Default().Printf("[page limit %v] - Received %v pages of %v\n",
@@ -167,18 +177,23 @@ func (c *client) getAPIKey() error {
 // cardPicker is the entry point for the client server that speaks to the blizzard api.
 // It returns a slice of 10 cards that match the criteria passed to it.
 func (c *client) CardPicker() ([]Card, error) {
+	// get the api key.
 	err := c.getAPIKey()
 	if err != nil {
 		return nil, err
 	}
+	// get the cards.
 	cards, err := c.getCard()
 	if err != nil {
 		return nil, err
 	}
+	// shuffle the cards.
 	rand.Shuffle(len(cards), func(i, j int) {
 		cards[i], cards[j] = cards[j], cards[i]
 	})
+	// snip the cards to the first 10.
 	cards = cards[:10]
+	// sort the cards by ID.
 	sort.SliceStable(cards, func(i, j int) bool {
 		return cards[i].ID < cards[j].ID
 	})
