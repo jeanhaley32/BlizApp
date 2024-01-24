@@ -3,7 +3,8 @@ package main
 var (
 	header = `
 	<!DOCTYPE html>
-	<html lang="en">	`
+	<html lang="en">	
+	<body>`
 	css = `
 	<style>
 	html, body{
@@ -19,7 +20,8 @@ var (
 		max-width: 90%;
 		width	: 100%;
 		max-height: auto;
-		display: grid;
+		display: flexbox;
+		flex-wrap: wrap;
 		grid-template-rows: repeat(.8fr, 1fr);
 		overflow: auto;
 		margin: 5px auto;
@@ -75,4 +77,9 @@ var (
 	<p id=info>Rarity: %v</p>
 	</div>
 	  </div>`
+
+	footer = `
+	</div>
+	</body>
+	</html>`
 )
