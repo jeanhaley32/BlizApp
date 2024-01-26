@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	clientID, secret, jsonFile string
-	ServerstartTime            time.Time
+	port, ip, clientID, secret, jsonFile string
+	ServerstartTime                      time.Time
 	// Constructed query parameters for the API call.
 	// The key is the name of the query parameter, and the value is the value of the query parameter.
 	// The value can be a single value or a slice of values.
@@ -37,6 +37,8 @@ var (
 func init() {
 	// ServerstartTime is used to calculate the time the server ran for.
 	ServerstartTime = time.Now()
+	flag.StringVar(&ip, "ip", "localhost", "ip address to run the server on")
+	flag.StringVar(&port, "port", "8080", "port to run the server on")
 	flag.StringVar(&jsonFile, "json", "secrets.json", "json file containing the clientID and secret")
 	flag.StringVar(&clientID, "clientid", "", "clientID for the blizzard api")
 	flag.StringVar(&secret, "secret", "", "secret for the blizzard api")
@@ -46,6 +48,8 @@ func init() {
 func main() {
 	// start the interruptlog goroutine.
 	interruptlog()
+	// socket is the ip and port that the server will run on.
+	socket := fmt.Sprintf("%s:%s", ip, port)
 	defer func() {
 		// exitSeq is a function that will log the time the server ran for, and exit the program.
 		exitSeq(nil)
@@ -61,12 +65,12 @@ func main() {
 	}
 	// Using Goji to handle the routing.
 	mux := goji.NewMux()
-	log.Default().Println("Starting server on localhost:8080")
+	log.Default().Println("Starting server " + socket)
 	mux.HandleFunc(pat.Get("/"), func(w http.ResponseWriter, r *http.Request) {
 		log.Default().Printf("Request recieved from %s", r.RemoteAddr)
 		w.Write(constructSite(client))
 	})
-	http.ListenAndServe("localhost:8080", mux)
+	http.ListenAndServe(socket, mux)
 }
 
 // used for debugging. Kept around for future use.
