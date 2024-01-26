@@ -34,6 +34,13 @@ type client struct {
 	criteria     criteria
 }
 
+// Rarity, Class, Set, and Type are actually ints.
+// Enums are defined in enums.go.
+type Rarity int
+type Class int
+type Set int
+type Type int
+
 // Card holds just the data we need for a single Hearthstone card.
 type Card struct {
 	ID         int    `json:"id"`
