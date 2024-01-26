@@ -1,10 +1,5 @@
 package main
 
-type Rarity int
-type Class int
-type Set int
-type Type int
-
 const (
 	COMMON Rarity = iota + 1
 	FREE
