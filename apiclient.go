@@ -151,8 +151,6 @@ func (c *client) getAPIKey() error {
 	// https://datatracker.ietf.org/doc/html/rfc2617#section-2:~:text=2%20Basic%20Authentication%20Scheme
 	// I didn't know this before this project, so this was a fun learning experience.
 	req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(authdata)))
-	fmt.Println(base64.StdEncoding.EncodeToString([]byte(authdata)))
-	fmt.Println(req)
 	// Create a new http client and make the request.
 	client := http.Client{}
 	resp, err := client.Do(req)
