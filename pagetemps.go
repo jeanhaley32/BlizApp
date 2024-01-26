@@ -26,6 +26,8 @@ var (
 		overflow: auto;
 		margin: 5px auto;
 		border-radius: 20px;
+		font-family: 'Roboto', sans-serif;
+		font-size: 1.5rem;
 		box-shadow: 0px 0px 10px rgb(181, 186, 191);
 	}
 	.card {
